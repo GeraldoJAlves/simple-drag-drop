@@ -1,5 +1,5 @@
 <h1 align="center">
-Carrossel
+Drag&Drop
 </h1>
 
 ## Techs
