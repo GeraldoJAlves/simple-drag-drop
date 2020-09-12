@@ -1,20 +1,31 @@
-import React from 'react';
+import React from "react";
 
-import { Container, Wrapper, ImgFile } from './styles';
+import { Container, Wrapper, ImgFile } from "./styles";
+
+import Skeleton from '../Skeleton';
 
 interface Props {
   list: Array<any>;
 }
 
-const ListImages: React.FC<Props> = ({list}) => {
+const ListImages: React.FC<Props> = ({ list }) => {
+
+  const columns = list.length === 4 ? 2 : Math.min(list.length, 3);
+
   return (
-    <Container>
-      {list.map( (item,index) => {
+    <Container style={{
+      gridTemplateColumns: `repeat(${columns},1fr)`
+    }}>
+      {list.map((item, index) => {
         return (
           <Wrapper key={index}>
-            <ImgFile src={item.src} />
+            {item.src ? (
+              <ImgFile src={item.src} /> 
+              ) : (
+              <Skeleton className="image-skeleton" />
+            )}
           </Wrapper>
-        )
+        );
       })}
     </Container>
   );

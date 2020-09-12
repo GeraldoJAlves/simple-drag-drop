@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Container, DragBox, UploadIcon, DragText } from "./styles";
+import { Container, DragBox, UploadIcon, DragText, LoadingIcon } from "./styles";
 
 interface Props {
   onReadyFiles: any;
@@ -29,26 +29,30 @@ const DragDrop: React.FC<Props> = ({onReadyFiles}) => {
     e.stopPropagation();
     let dt = e.dataTransfer;
     let files:Array<any> = dt.files;
-    let list:Array<any> = [];
+    let list:Array<any> = Array(files.length).fill({src:''});
     let index:number = 0;
-
-    const reader = new FileReader();
-
+    
     if( files.length === 0) {
       return;
     }
-
+    
+    onReadyFiles(list);
+    
+    const reader = new FileReader();
     reader.readAsDataURL(files[index]);
     reader.onloadend = () => {
-      index++;
-      if (typeof reader.result == "string") {
-        list.push({ src : reader.result});
-      }
 
+      if (typeof reader.result == "string") {
+        list[index] = { src : reader.result};
+      }
+      index++;
       if(files.length === index) {
-        onReadyFiles(list);
+        onReadyFiles([...list]);
       } else {
-        reader.readAsDataURL(files[index]);
+        setTimeout(() => {
+          reader.readAsDataURL(files[index]);
+          onReadyFiles([...list]);
+        },500);
       }
     };
 
@@ -73,9 +77,14 @@ const DragDrop: React.FC<Props> = ({onReadyFiles}) => {
         {!dropFile ? (
           <>
             <UploadIcon />
-            <DragText>Choose a file</DragText>
+            <DragText>Drag&Drop files here</DragText>
           </>
-        ) : null}
+        ) : (
+          <>
+            <LoadingIcon />
+            <DragText>Loading...</DragText>
+          </>
+        )}
       </DragBox>
     </Container>
   );
