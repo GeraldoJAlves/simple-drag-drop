@@ -1,16 +1,18 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  margin-top: 40px;
-  display: flex;
-  height: 100px;
+  display: grid;
+  grid-row-gap: 5px;
+  grid-template-columns: auto auto auto;
+  height: 80vh;
   width: 80vw;
-  flex-direction: row;
+  border: 1px solid #ddd;
 `;
 
 export const Wrapper = styled.div`
-  padding: 10px;
-  width: 100px;
+  padding: 5px;
+  width: 100%;
+  height: 100%;
 `;
 
 export const ImgFile = styled.img`
