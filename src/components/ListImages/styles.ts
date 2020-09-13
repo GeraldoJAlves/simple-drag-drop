@@ -2,13 +2,17 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   display: grid;
-  /* grid-template-columns: repeat(3, 1fr);; */
+  grid-template-columns: 1fr;
   grid-auto-rows: 1fr;
   /* grid: 150px / auto auto auto; */
   height: 80vh;
   width: 80vw;
   padding: 10px;
   grid-gap: 10px;
+
+  @media (min-width: 600px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 `;
 
 export const Wrapper = styled.div`

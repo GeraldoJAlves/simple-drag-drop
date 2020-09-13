@@ -6,15 +6,16 @@ import Skeleton from '../Skeleton';
 
 interface Props {
   list: Array<any>;
+  clearList: Function;
 }
 
-const ListImages: React.FC<Props> = ({ list }) => {
+const ListImages: React.FC<Props> = ({ list, clearList }) => {
 
   const columns = list.length === 4 ? 2 : Math.min(list.length, 3);
 
   return (
-    <Container style={{
-      gridTemplateColumns: `repeat(${columns},1fr)`
+    <Container onDragEnter={()=>{
+      clearList();
     }}>
       {list.map((item, index) => {
         return (

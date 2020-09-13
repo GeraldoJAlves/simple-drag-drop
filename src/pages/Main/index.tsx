@@ -17,7 +17,9 @@ const Main: React.FC = () => {
           }}
         />
       ) : (
-        <ListImages list={list} />
+        <ListImages list={list} clearList={ () => {
+          setList([]);
+        }} />
       )}
     </Container>
   );

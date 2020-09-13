@@ -54,5 +54,6 @@ export const LoadingIcon = styled(FaSpinner)`
 
 export const DragText = styled.h2`
   margin-top: 10px;
+  text-align: center;
 `;
 
