@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Container, Wrapper, ImgFile } from "./styles";
+import { Container, Wrapper, ImgFile, LoadImageIcon } from "./styles";
 
 import Skeleton from '../Skeleton';
 
@@ -10,9 +10,6 @@ interface Props {
 }
 
 const ListImages: React.FC<Props> = ({ list, clearList }) => {
-
-  const columns = list.length === 4 ? 2 : Math.min(list.length, 3);
-
   return (
     <Container onDragEnter={()=>{
       clearList();
@@ -23,7 +20,9 @@ const ListImages: React.FC<Props> = ({ list, clearList }) => {
             {item.src ? (
               <ImgFile src={item.src} /> 
               ) : (
-              <Skeleton className="image-skeleton" />
+              <Skeleton className="image-skeleton">
+                <LoadImageIcon />
+              </Skeleton>
             )}
           </Wrapper>
         );
