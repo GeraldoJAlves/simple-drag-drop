@@ -6,20 +6,23 @@ import ListImages from "../../components/ListImages";
 import DragDrop from "../../components/DragDrop";
 
 const Main: React.FC = () => {
-  const [list, setList] = useState([]);
+  const [files, setFiles] = useState([]);
 
   return (
     <Container>
-      {list.length === 0 ? (
+      {files.length === 0 ? (
         <DragDrop
           onReadyFiles={(files: any) => {
-            setList(files);
+            setFiles(files);
           }}
         />
-      ) : (
-        <ListImages list={list} clearList={ () => {
-          setList([]);
-        }} />
+      ) :  (
+        <ListImages
+          files={files}
+          setFiles={(files:any) => {
+            setFiles(files);
+          }}
+        />
       )}
     </Container>
   );

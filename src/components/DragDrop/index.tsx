@@ -16,44 +16,46 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
   const [dragEnter, setDragEnter] = useState(false);
   const [dropFile, setDropFile] = useState(false);
 
-  const ReaderFiles = (files:Array<File>) => {
-    
+  const ReaderFiles = (files: Array<File>) => {
     if (files.length === 0) {
       return;
     }
-
-    let index: number = 0;
-    let list: Array<any> = Array(files.length).fill({ src: "" });
-
-    const imageFiles = filterImages(files);
-    if (imageFiles.length === 0) {
+    const filesAllowed = filterFiles(files);
+    if (filesAllowed.length === 0) {
       return;
     }
+
+    let list: Array<any> = Array(files.length).fill({ src: "" });
+    let index: number = 0;
 
     setDropFile(true);
     onReadyFiles(list);
 
     const reader = new FileReader();
-    reader.readAsDataURL(imageFiles[index]);
+    reader.readAsDataURL(filesAllowed[index]);
     reader.onloadend = () => {
       if (typeof reader.result == "string") {
-        list[index] = { src: reader.result };
+        list[index] = {
+          type: filesAllowed[index].type,
+          src: reader.result,
+        };
       }
       index++;
-      if (imageFiles.length === index) {
+      if (filesAllowed.length === index) {
         onReadyFiles([...list]);
       } else {
         setTimeout(() => {
-          reader.readAsDataURL(imageFiles[index]);
+          reader.readAsDataURL(filesAllowed[index]);
           onReadyFiles([...list]);
         }, 500);
       }
     };
   };
 
-  const filterImages = (fileList: Array<File>) => {
-    return  [...fileList].filter((item) => item.type.startsWith("image/"));
-  }
+  const filterFiles = (fileList: Array<File>) => {
+    const exp = /^(image|video|text|application\/json)/;
+    return [...fileList].filter((item) => exp.test(item.type));
+  };
 
   const onDragEnter = (e: any) => {
     console.log("onDragEnter");
@@ -74,22 +76,24 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
     e.stopPropagation();
     let dt = e.dataTransfer;
     let files: Array<File> = dt.files;
-
+    console.log(files);
     setDragEnter(false);
     ReaderFiles(files);
   };
 
   const onClick = () => {
-    const input = document.createElement("input");
+    const input = document.createElement("input") as HTMLInputElement;
     input.type = "file";
     input.multiple = true;
-    input.accept = 'image';
+    input.accept = "image";
 
-    input.onchange = (e:any) => {
+    input.onchange = (e: any) => {
       // getting a hold of the file reference
       console.log(e.target.files);
+
       if (e.target && e.target.files) {
-        ReaderFiles(e.target.files);
+        const fileList = e.target.files as Array<File>;
+        ReaderFiles(fileList);
       }
     };
 
@@ -114,7 +118,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
         {!dropFile ? (
           <>
             <UploadIcon />
-            <DragText>Drag&Drop images here</DragText>
+            <DragText>Drag&Drop files here</DragText>
           </>
         ) : (
           <>
