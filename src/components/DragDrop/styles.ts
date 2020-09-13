@@ -1,14 +1,11 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import { FaDownload } from 'react-icons/fa';
-import { FaSpinner } from 'react-icons/fa';
+import { FaDownload } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 
-export const Container = styled.div`
-  margin-top: 30px;
-`;
+export const Container = styled.div``;
 
 export const DragBox = styled.div`
-
   border: 7px solid black;
   border-style: dashed;
   position: relative;
@@ -18,20 +15,20 @@ export const DragBox = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #DDD;
+  background-color: #bbb;
   cursor: pointer;
 
   &.drag-enter {
-    width: 55vw;
-    height: 55vh;
-    background-color: #BBB;
+    width: 75vw;
+    height: 75vh;
+    background-color: #ddd;
   }
 
-  transition: width .5s, height .5s; 
-
+  transition: width 0.5s, height 0.5s;
 `;
 
 export const UploadIcon = styled(FaDownload)`
+  pointer-events: none;
   width: 40px;
   height: 40px;
 `;
@@ -55,5 +52,5 @@ export const LoadingIcon = styled(FaSpinner)`
 export const DragText = styled.h2`
   margin-top: 10px;
   text-align: center;
+  pointer-events: none;
 `;
-

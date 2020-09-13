@@ -57,28 +57,27 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
     return [...fileList].filter((item) => exp.test(item.type));
   };
 
-  const onDragEnter = (e: any) => {
-    console.log("onDragEnter");
-    setDragEnter(true);
+  const stopPropagation = (e:any) => {
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  const onDragEnter = (e: any) => {
+    setDragEnter(true);
+    stopPropagation(e);
   };
 
   const onDragLeave = (e: any) => {
-    console.log("onDragLeave");
     setDragEnter(false);
-    e.preventDefault();
-    e.stopPropagation();
+    stopPropagation(e);
   };
 
   const onDrop = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
     let dt = e.dataTransfer;
     let files: Array<File> = dt.files;
-    console.log(files);
     setDragEnter(false);
     ReaderFiles(files);
+    stopPropagation(e);
   };
 
   const onClick = () => {
@@ -88,9 +87,6 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
     input.accept = "image";
 
     input.onchange = (e: any) => {
-      // getting a hold of the file reference
-      console.log(e.target.files);
-
       if (e.target && e.target.files) {
         const fileList = e.target.files as Array<File>;
         ReaderFiles(fileList);
