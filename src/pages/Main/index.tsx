@@ -6,13 +6,13 @@ import ListFiles from "../../components/ListFiles";
 import DragDrop from "../../components/DragDrop";
 
 const Main: React.FC = () => {
-  const [files, setFiles] = useState<Array<any>>(Array(20).fill(
-    {
-      src:'ksdlfjklsa klsdfjalsdjf',
-      type:'text',
-      name:'',
-    }));
-  // const [files, setFiles] = useState<Array<any>>([]);
+  // const [files, setFiles] = useState<Array<any>>(Array(20).fill(
+  //   {
+  //     src:'ksdlfjklsa klsdfjalsdjf',
+  //     type:'text',
+  //     name:'',
+  //   }));
+  const [files, setFiles] = useState<Array<any>>([]);
   const [dragFiles, setDragFiles] = useState(false);
 
   const stopPropagation = (e:any) => {
