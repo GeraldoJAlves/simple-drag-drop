@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { Video } from "video-metadata-thumbnails";
+
 import {
   Container,
   DragBox,
@@ -10,9 +12,8 @@ import {
 
 interface Props {
   onReadyFiles: any;
-  endOnDrag:any;
+  endOnDrag: any;
 }
-
 
 const traverseFileTree = async (item: any, path?: any) => {
   return new Promise((resolve, reject) => {
@@ -43,13 +44,11 @@ const traverseFileTree = async (item: any, path?: any) => {
   });
 };
 
-
 const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
   const [dragEnter, setDragEnter] = useState(false);
   const [dropFile, setDropFile] = useState(false);
 
-  const ReaderFiles = (files: Array<File>) => {
-    console.log(files);
+  const ReaderFiles = async (files: Array<any>) => {
     if (files.length === 0) {
       endOnDrag();
       return;
@@ -66,30 +65,36 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
     setDropFile(true);
     onReadyFiles(list);
 
-    const reader = new FileReader();
-    reader.readAsDataURL(filesAllowed[index]);
-    reader.onloadend = () => {
-      if (typeof reader.result == "string") {
-        list[index] = {
-          type: filesAllowed[index].type,
-          name: filesAllowed[index].name,
-          size: filesAllowed[index].size,
-          src: reader.result,
-        };
+    for( const item of filesAllowed) {
+      let preview = "";
+      let src = window.URL.createObjectURL(item);
+      if (item.type.startsWith("video")) {
+        const video = new Video(item);
+        const thumbnails = await video.getThumbnails({
+          quality: 2,
+          start: 10,
+          end: 10,
+        });
+        preview = window.URL.createObjectURL(thumbnails[0].blob);
       }
+      if (item.type.startsWith("text") || item.type.endsWith("json")) {
+        preview = src;
+        src = await item.text();
+      }
+      list[index] = {
+        type: item.type,
+        name: item.name,
+        size: item.size,
+        src,
+        preview,
+      };
       index++;
-      if (filesAllowed.length === index) {
-        onReadyFiles([...list]);
-      } else {
-        setTimeout(() => {
-          reader.readAsDataURL(filesAllowed[index]);
-          onReadyFiles([...list]);
-        }, 500);
-      }
     };
+
+    onReadyFiles(list);
   };
 
-  const filterFiles = (fileList: Array<File>) => {
+  const filterFiles = (fileList: Array<any>) => {
     const exp = /^(image|video|text|application\/json)/;
     return [...fileList].filter((item) => exp.test(item.type));
   };
@@ -110,34 +115,28 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
   };
 
   const onDrop = async (e: any) => {
-    console.log('drop certo');
-    //let dt = e.dataTransfer;
-    //let files: Array<any> = dt.files;
     const fileList: FileList = e.dataTransfer.files;
     const items: DataTransferItemList = e.dataTransfer.items;
     stopPropagation(e);
-    let filesImport:any = [];
+    let filesImport: any = [];
 
-    
     for (let i = 0; i < items.length; i++) {
-      if (items[i].kind === 'file' && items[i].type === '') {
+      if (items[i].kind === "file" && items[i].type === "") {
         //try read directory
-        try{
-
+        try {
           let item = items[i].webkitGetAsEntry();
-          let filesDirectory:any = await traverseFileTree(item);
+          let filesDirectory: any = await traverseFileTree(item);
           filesImport = filterFiles(filesDirectory);
-        } catch(e) {
+        } catch (e) {
           console.log(e);
         }
       }
     }
     for (let i = 0; i < fileList.length; i++) {
-      if(fileList[i].type) {
+      if (fileList[i].type) {
         filesImport.push(fileList[i]);
       }
     }
-    console.log(filesImport);
 
     setDragEnter(false);
     ReaderFiles(filesImport);

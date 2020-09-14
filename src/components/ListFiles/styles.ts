@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 
-import {FaImage, FaTh, FaStepForward, FaStepBackward, FaTrash, FaFastForward, FaFastBackward} from 'react-icons/fa';
+import {FaImage, FaStepForward, FaStepBackward, FaTrash, FaFastForward, FaFastBackward, FaChevronUp, FaChevronDown} from 'react-icons/fa';
 
 export const Container = styled.div`
   display: flex;
@@ -21,6 +21,39 @@ export const Preview = styled.div`
   height: 10vh;
   display: flex;
   flex-direction: row;
+  overflow-x: hidden;
+  &>.image-skeleton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100%;
+  }
+`;
+
+export const PreviewText = styled.textarea`
+  cursor: pointer;
+  padding: 10px;
+  flex: 1;
+  font-size: 1px;
+  resize: none;
+  text-align: start;
+  background: black;
+  border: none;
+  color: white;
+  outline: 0;
+  opacity: 0.5;
+  min-width: 100px;
+  max-width: 100px;
+  transition: opacity 0.5s;
+  &.active{
+    opacity: 1;
+    cursor: default;
+    border: solid #333 .3px;
+  }
+  &:hover{
+    opacity: 1;
+  }
 `;
 
 export const PreviewItem = styled.img`
@@ -33,6 +66,7 @@ export const PreviewItem = styled.img`
   &.active{
     opacity: 1;
     cursor: unset;
+    border: solid #333 .3px;
   }
   &:hover{
     opacity: 1;
@@ -95,7 +129,11 @@ export const DeleteIcon = styled(FaTrash)`
   ${cssIcons}
 `;
 
-export const MenuIcon = styled(FaTh)`
+export const PreviewIconOpen = styled(FaChevronUp)`
+  ${cssIcons}
+`;
+
+export const PreviewIconClose = styled(FaChevronDown)`
   ${cssIcons}
 `;
 
