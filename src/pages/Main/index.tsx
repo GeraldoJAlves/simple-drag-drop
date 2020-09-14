@@ -37,7 +37,6 @@ const Main: React.FC = () => {
       onDragOver={(e) => {
         stopPropagation(e);
       }}
-
     >
       {files.length === 0 || dragFiles ? (
         <DragDrop

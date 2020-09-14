@@ -8,6 +8,11 @@ import {
   UploadIcon,
   DragText,
   LoadingIcon,
+  TypeFiles,
+  PictureIcon,
+  TextIcon,
+  VideoIcon,
+  FolderIcon
 } from "./styles";
 
 interface Props {
@@ -65,7 +70,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
     setDropFile(true);
     onReadyFiles(list);
 
-    for( const item of filesAllowed) {
+    for (const item of filesAllowed) {
       let preview = "";
       let src = window.URL.createObjectURL(item);
       if (item.type.startsWith("video")) {
@@ -89,7 +94,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
         preview,
       };
       index++;
-    };
+    }
 
     onReadyFiles(list);
   };
@@ -177,6 +182,12 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
           <>
             <UploadIcon />
             <DragText>Drag&Drop files here</DragText>
+            <TypeFiles>
+              <VideoIcon />
+              <TextIcon />
+              <PictureIcon />
+              <FolderIcon />
+            </TypeFiles>
           </>
         ) : (
           <>
