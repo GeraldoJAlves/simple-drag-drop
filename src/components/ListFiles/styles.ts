@@ -4,14 +4,38 @@ import styled, { css } from 'styled-components';
 import {FaImage, FaTh, FaStepForward, FaStepBackward, FaTrash, FaFastForward, FaFastBackward} from 'react-icons/fa';
 
 export const Container = styled.div`
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-auto-rows: 1fr;
+  display: flex;
+  flex-direction: column;
+  /* grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr; */
   /* grid: 150px / auto auto auto; */
   height: 100vh;
   width: 100vw;
-  grid-gap: 10px;
+  /* grid-gap: 10px; */
   @media (min-width: 600px) {
+  }
+`;
+
+export const Preview = styled.div`
+  width: 100vw;
+  height: 10vh;
+  display: flex;
+  flex-direction: row;
+`;
+
+export const PreviewItem = styled.img`
+  cursor: pointer;
+  object-fit: contain;
+  border: 2px solid black;
+  max-width: 100px;
+  opacity: 0.5;
+  transition: opacity 0.5s;
+  &.active{
+    opacity: 1;
+    cursor: unset;
+  }
+  &:hover{
+    opacity: 1;
   }
 `;
 
@@ -22,7 +46,7 @@ export const Wrapper = styled.div`
   justify-content: space-between;
   flex: 1;
   align-items: stretch;
-  height: 100vh;
+  height: 90vh;
   width: 100vw;
   &>.image-skeleton {
     display: flex;
@@ -42,6 +66,10 @@ export const ToolBar = styled.div`
   align-items: center;
   height: 40px;
   background: black;
+  &>span {
+    color: white;
+    font-weight: bold;
+  }
 `;
 
 const cssIcons = css`

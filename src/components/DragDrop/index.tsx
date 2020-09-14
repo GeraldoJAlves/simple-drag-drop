@@ -10,18 +10,53 @@ import {
 
 interface Props {
   onReadyFiles: any;
+  endOnDrag:any;
 }
 
-const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
+
+const traverseFileTree = async (item: any, path?: any) => {
+  return new Promise((resolve, reject) => {
+    path = path || "";
+    if (item.isFile) {
+      item.file(async (file: File) => {
+        resolve(file);
+      });
+    } else if (item.isDirectory) {
+      const dirReader = item.createReader();
+      dirReader.readEntries(async (entries: any) => {
+        const files: any = [];
+
+        for (let i = 0; i < entries.length; i++) {
+          let file: any = await traverseFileTree(
+            entries[i],
+            path + item.name + "/"
+          );
+          if (entries[i].isDirectory) {
+            files.concat(...file);
+          } else {
+            files.push(file);
+          }
+        }
+        resolve(files);
+      });
+    }
+  });
+};
+
+
+const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
   const [dragEnter, setDragEnter] = useState(false);
   const [dropFile, setDropFile] = useState(false);
 
   const ReaderFiles = (files: Array<File>) => {
+    console.log(files);
     if (files.length === 0) {
+      endOnDrag();
       return;
     }
     const filesAllowed = filterFiles(files);
     if (filesAllowed.length === 0) {
+      endOnDrag();
       return;
     }
 
@@ -37,6 +72,8 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
       if (typeof reader.result == "string") {
         list[index] = {
           type: filesAllowed[index].type,
+          name: filesAllowed[index].name,
+          size: filesAllowed[index].size,
           src: reader.result,
         };
       }
@@ -57,10 +94,10 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
     return [...fileList].filter((item) => exp.test(item.type));
   };
 
-  const stopPropagation = (e:any) => {
+  const stopPropagation = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-  }
+  };
 
   const onDragEnter = (e: any) => {
     setDragEnter(true);
@@ -72,12 +109,38 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles }) => {
     stopPropagation(e);
   };
 
-  const onDrop = (e: any) => {
-    let dt = e.dataTransfer;
-    let files: Array<File> = dt.files;
-    setDragEnter(false);
-    ReaderFiles(files);
+  const onDrop = async (e: any) => {
+    console.log('drop certo');
+    //let dt = e.dataTransfer;
+    //let files: Array<any> = dt.files;
+    const fileList: FileList = e.dataTransfer.files;
+    const items: DataTransferItemList = e.dataTransfer.items;
     stopPropagation(e);
+    let filesImport:any = [];
+
+    
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].kind === 'file' && items[i].type === '') {
+        //try read directory
+        try{
+
+          let item = items[i].webkitGetAsEntry();
+          let filesDirectory:any = await traverseFileTree(item);
+          filesImport = filterFiles(filesDirectory);
+        } catch(e) {
+          console.log(e);
+        }
+      }
+    }
+    for (let i = 0; i < fileList.length; i++) {
+      if(fileList[i].type) {
+        filesImport.push(fileList[i]);
+      }
+    }
+    console.log(filesImport);
+
+    setDragEnter(false);
+    ReaderFiles(filesImport);
   };
 
   const onClick = () => {

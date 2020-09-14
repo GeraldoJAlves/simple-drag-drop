@@ -14,6 +14,8 @@ import {
   LastIcon,
   ToolBar,
   MenuIcon,
+  Preview,
+  PreviewItem
 } from "./styles";
 
 import Skeleton from "../Skeleton";
@@ -23,10 +25,7 @@ interface Props {
   setFiles: Function;
 }
 
-const ListFiles: React.FC<Props> = ({
-  files,
-  setFiles,
-}) => {
+const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
   const [currentItem, setCurrentItem] = useState(0);
   const total = files.length;
   const getTypeFile = (item: any) => {
@@ -56,54 +55,68 @@ const ListFiles: React.FC<Props> = ({
   };
 
   return (
-    <Container
-      
-    >
+    <Container>
       {total > 0 ? (
-        <Wrapper>
-          {files[currentItem].src ? (
-            <>
-              {getTypeFile(files[currentItem])}
-              <ToolBar>
-                <MenuIcon />
-                <FirstIcon
-                  className={currentItem > 0 ? "" : "disable"}
-                  onClick={() => {
-                    currentItem > 0 && setCurrentItem(0);
-                  }}
-                />
-                <PrevIcon
-                  className={currentItem > 0 ? "" : "disable"}
-                  onClick={() => {
-                    currentItem > 0 && setCurrentItem(currentItem - 1);
-                  }}
-                />
-                <NextIcon
-                  className={currentItem < total - 1 ? "" : "disable"}
-                  onClick={() => {
-                    currentItem < total - 1 && setCurrentItem(currentItem + 1);
-                  }}
-                />
-                <LastIcon
-                  className={currentItem < total - 1 ? "" : "disable"}
-                  onClick={() => {
-                    currentItem < total - 1 && setCurrentItem(total - 1);
-                  }}
-                />
-                <DeleteIcon
-                  onClick={() => {
-                    setFiles(files.filter((v, i) => i !== currentItem));
-                    setCurrentItem(0);
-                  }}
-                />
-              </ToolBar>
-            </>
-          ) : (
-            <Skeleton className="image-skeleton">
-              <LoadImageIcon />
-            </Skeleton>
-          )}
-        </Wrapper>
+        <>
+          <Preview>
+              {files.map( (item, index) => {
+                return (
+                  <PreviewItem key={index} src={item.src} className={index === currentItem ? 'active' : ''} />
+                );
+              })}
+          </Preview>
+          <Wrapper>
+            {files[currentItem].src ? (
+              <>
+                <ToolBar>
+                  <MenuIcon />
+                  <span className="name-file">{files[currentItem].name}</span>
+                  <DeleteIcon
+                    onClick={() => {
+                      setFiles(files.filter((v, i) => i !== currentItem));
+                      setCurrentItem(0);
+                    }}
+                  />
+                </ToolBar>
+                {getTypeFile(files[currentItem])}
+                <ToolBar>
+                  <FirstIcon
+                    className={currentItem > 0 ? "" : "disable"}
+                    onClick={() => {
+                      currentItem > 0 && setCurrentItem(0);
+                    }}
+                  />
+                  <PrevIcon
+                    className={currentItem > 0 ? "" : "disable"}
+                    onClick={() => {
+                      currentItem > 0 && setCurrentItem(currentItem - 1);
+                    }}
+                  />
+                  <span>
+                    {currentItem + 1} / {total}
+                  </span>
+                  <NextIcon
+                    className={currentItem < total - 1 ? "" : "disable"}
+                    onClick={() => {
+                      currentItem < total - 1 &&
+                        setCurrentItem(currentItem + 1);
+                    }}
+                  />
+                  <LastIcon
+                    className={currentItem < total - 1 ? "" : "disable"}
+                    onClick={() => {
+                      currentItem < total - 1 && setCurrentItem(total - 1);
+                    }}
+                  />
+                </ToolBar>
+              </>
+            ) : (
+              <Skeleton className="image-skeleton">
+                <LoadImageIcon />
+              </Skeleton>
+            )}
+          </Wrapper>
+        </>
       ) : null}
     </Container>
   );

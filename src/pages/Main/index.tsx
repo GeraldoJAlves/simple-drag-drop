@@ -6,7 +6,12 @@ import ListFiles from "../../components/ListFiles";
 import DragDrop from "../../components/DragDrop";
 
 const Main: React.FC = () => {
-  const [files, setFiles] = useState<Array<any>>([]);
+  const [files, setFiles] = useState<Array<any>>(Array(10).fill(
+    {
+      src:'https://i.pinimg.com/originals/7b/aa/25/7baa252dbdfeed669c152bedd2fa5feb.jpg',
+      type:'image',
+      name:'teste',
+    }));
   const [dragFiles, setDragFiles] = useState(false);
 
   const stopPropagation = (e:any) => {
@@ -18,16 +23,17 @@ const Main: React.FC = () => {
     <Container
       onDragEnter={(e) => {
         setDragFiles(true);
+        stopPropagation(e);
       }}
       onDragLeave={(e) => {
+        stopPropagation(e);
         setDragFiles(false);
-        stopPropagation(e);
-      }}
-      onDragOver={(e) => {
-        stopPropagation(e);
       }}
       onDrop={(e) => {
+        stopPropagation(e);
         setDragFiles(false);
+      }}
+      onDragOver={(e) => {
         stopPropagation(e);
       }}
 
@@ -37,6 +43,9 @@ const Main: React.FC = () => {
           onReadyFiles={(newFiles: Array<any>) => {
             setDragFiles(false);
             setFiles([].concat(...files,...newFiles));
+          }}
+          endOnDrag={()=>{
+            setDragFiles(false);
           }}
         />
       ) : (
