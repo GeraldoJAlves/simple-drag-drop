@@ -157,6 +157,7 @@ export const PrevIcon = styled(FaStepBackward)`
 export const Video = styled.video`
   object-fit: contain;
   width: 100%;
+  height: 60vh;
   flex:1;
   background: black;
   border: none;

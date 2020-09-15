@@ -20,6 +20,17 @@ interface Props {
   endOnDrag: any;
 }
 
+const readBlobAsString = (file: Blob) => {
+  return new Promise( (resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onloadend = () => {
+      resolve(reader.result);
+    }
+    reader.onerror = reject;
+  });
+}
+
 const traverseFileTree = async (item: any, path?: any) => {
   return new Promise((resolve, reject) => {
     path = path || "";
@@ -72,19 +83,29 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
 
     for (const item of filesAllowed) {
       let preview = "";
-      let src = window.URL.createObjectURL(item);
+      let src:any = window.URL.createObjectURL(item);
       if (item.type.startsWith("video")) {
         const video = new Video(item);
         const thumbnails = await video.getThumbnails({
           quality: 2,
-          start: 10,
-          end: 10,
+          start: 0,
+          end: 5,
         });
-        preview = window.URL.createObjectURL(thumbnails[0].blob);
+        if(thumbnails.length > 0 && thumbnails[thumbnails.length - 1].blob ){
+          preview = window.URL.createObjectURL(thumbnails[thumbnails.length - 1].blob);
+        }
       }
       if (item.type.startsWith("text") || item.type.endsWith("json")) {
         preview = src;
-        src = await item.text();
+        if(item.text){
+          src = await item.text();
+        } else {
+          try{
+            src = await readBlobAsString(item);
+          }catch(e) {
+            console.log(e);
+          }
+        }
       }
       list[index] = {
         type: item.type,
