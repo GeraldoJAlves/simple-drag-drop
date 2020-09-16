@@ -42,30 +42,30 @@ const readBlobAsString = (file: Blob) => {
 };
 
 const traverseFileTree = async (item: any, path?: string) => {
-  return new Promise<File[]|File>((resolve, reject) => {
+  return new Promise<File[]>((resolve, reject) => {
     path = path || "";
     if (item.isFile) {
       item.file(async (file: File) => {
-        resolve(file);
-      });
+        resolve([file]);
+      }, reject);
     } else if (item.isDirectory) {
       const dirReader = item.createReader();
-      dirReader.readEntries(async (entries: any) => {
-        const files: any = [];
-
+      dirReader.readEntries(async (entries:any) => {
+        let files: File[] = [];
         for (let i = 0; i < entries.length; i++) {
-          let file: any = await traverseFileTree(
-            entries[i],
-            path + item.name + "/"
-          );
-          if (entries[i].isDirectory) {
-            files.concat(...file);
-          } else {
-            files.push(file);
+          try {
+
+            let file: File[] = await traverseFileTree(
+              entries[i],
+              path + item.name + "/"
+            );
+            files = files.concat(...file);
+          } catch (e) {
+            reject(e);
           }
         }
         resolve(files);
-      });
+      }, reject);
     }
   });
 };
@@ -162,9 +162,12 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
       if (items[i].kind === "file" && items[i].type === "") {
         //try read directory
         try {
-          let item = items[i].webkitGetAsEntry();
-          let filesDirectory = await traverseFileTree(item);
-          filesImport = filterFiles(filesDirectory);
+          let item: any = items[i].webkitGetAsEntry();
+          if (item.isDirectory) {
+            let filesDirectory: File[] = await traverseFileTree(item);
+            console.log(filesDirectory);
+            filesImport = filterFiles(filesDirectory);
+          }
         } catch (e) {
           console.log(e);
         }
@@ -180,18 +183,24 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
     ReaderFiles(filesImport);
   };
 
-  const onClick = (event:MouseEvent) => {
+  const onClick = (event: MouseEvent) => {
     const input = document.createElement("input") as HTMLInputElement;
     input.type = "file";
     input.multiple = true;
+    input.name =  'upload[]';
     input.accept = "image";
 
-    input.onchange = (e: any) => {
-      if (e.target && e.target.files) {
-        const fileList = e.target.files as Array<File>;
-        ReaderFiles(fileList);
+    input.addEventListener('change',(ev:Event)=> {
+      if (ev.target) {
+        const htmlInput = ev.target as HTMLInputElement;
+        const fileList = htmlInput.files as FileList;
+        const fileUpload:File[] = [];
+        for(let i=0; i < fileList.length; i++){
+          fileUpload.push(fileList[i]);
+        }
+        ReaderFiles(fileUpload);
       }
-    };
+    })
 
     input.click();
   };
