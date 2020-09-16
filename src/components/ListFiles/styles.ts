@@ -46,6 +46,8 @@ export const PreviewText = styled.textarea`
   min-width: 100px;
   max-width: 100px;
   transition: opacity 0.5s;
+  overflow-x: hidden;
+  overflow-y: hidden;
   &.active{
     opacity: 1;
     cursor: default;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, WheelEvent, MouseEvent } from "react";
 
 import {
   Container,
@@ -23,23 +23,30 @@ import {
 import Skeleton from "../Skeleton";
 
 interface Props {
-  files: Array<any>;
-  setFiles: Function;
+  files: IUploadFile[];
+  setFiles(files: IUploadFile[]): void;
+}
+interface IUploadFile {
+  name: string;
+  type: string;
+  size: number;
+  src: string;
+  preview?: string;
 }
 
-const scrollTo = (preview:number) => {
-  const element = document.querySelector(`.preview > .preview-item:nth-child(${preview +1})`);
-
+const scrollTo = (preview: number) => {
+  const element = document.querySelector(
+    `.preview > .preview-item:nth-child(${preview + 1})`
+  );
   element?.scrollIntoView(true);
-}
-
-let element:any = null;
+};
 
 const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
   const [currentItem, setCurrentItem] = useState(0);
   const [showPreview, setShowPreview] = useState(true);
   const total = files.length;
-  const getTypeFile = (item: any) => {
+
+  const getTypeFile = (item: IUploadFile) => {
     if (item.type.startsWith("image")) {
       return <ImgFile src={item.src} />;
     }
@@ -65,21 +72,19 @@ const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
     return null;
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     scrollTo(currentItem);
-    element=null;
-  },[currentItem]);
+  }, [currentItem]);
 
   return (
     <Container>
       {total > 0 ? (
         <>
-          <Preview className='preview' 
-            onWheel={(e)=>{
-              if(!element){
-                element = document.querySelector('.preview');
-              }
-              element?.scrollBy(e.deltaY,0);
+          <Preview
+            className="preview"
+            onWheel={(event: WheelEvent<HTMLDivElement>) => {
+              const element = document.querySelector(".preview");
+              element?.scrollBy(event.deltaY, 0);
             }}
           >
             {showPreview
@@ -92,12 +97,15 @@ const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
                       return (
                         <PreviewText
                           key={index}
-                          onClick={() => {
+                          onClick={(event:MouseEvent) => {
                             index !== currentItem && setCurrentItem(index);
                           }}
                           readOnly={true}
                           value={item.src}
-                          className={'preview-item '+(index === currentItem ? "active" : "")}
+                          className={
+                            "preview-item " +
+                            (index === currentItem ? "active" : "")
+                          }
                         />
                       );
                     }
@@ -112,7 +120,10 @@ const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
                             ? item.src
                             : item.preview
                         }
-                        className={'preview-item '+(index === currentItem ? "active" : "")}
+                        className={
+                          "preview-item " +
+                          (index === currentItem ? "active" : "")
+                        }
                       />
                     );
                   } else {
@@ -125,25 +136,24 @@ const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
                 })
               : null}
           </Preview>
-          <Wrapper style={
-            showPreview ? {}: {height:'100vh'}
-          }>
+          <Wrapper style={showPreview ? {} : { height: "100vh" }}>
             {files[currentItem].src ? (
               <>
                 <ToolBar>
-                  {showPreview ?(
+                  {showPreview ? (
                     <PreviewIconOpen
-                    onClick={() => {
-                      setShowPreview(!showPreview);
-                    }}
-                  />):(
+                      onClick={() => {
+                        setShowPreview(!showPreview);
+                      }}
+                    />
+                  ) : (
                     <PreviewIconClose
-                    onClick={() => {
-                      setShowPreview(!showPreview);
-                    }}
-                  />
-                  )};
-                  <span className="name-file">{files[currentItem].name}</span>
+                      onClick={() => {
+                        setShowPreview(!showPreview);
+                      }}
+                    />
+                  )}
+                  ;<span className="name-file">{files[currentItem].name}</span>
                   <DeleteIcon
                     onClick={() => {
                       setFiles(files.filter((v, i) => i !== currentItem));

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, DragEvent, MouseEvent } from "react";
 
 import { Video } from "video-metadata-thumbnails";
 
@@ -12,27 +12,37 @@ import {
   PictureIcon,
   TextIcon,
   VideoIcon,
-  FolderIcon
+  FolderIcon,
 } from "./styles";
-
+interface IUploadFile {
+  name: string;
+  type: string;
+  size: number;
+  src: string;
+  preview?: string;
+}
 interface Props {
-  onReadyFiles: any;
-  endOnDrag: any;
+  onReadyFiles(files: IUploadFile[]): void;
+  endOnDrag(): void;
 }
 
 const readBlobAsString = (file: Blob) => {
-  return new Promise( (resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onloadend = () => {
-      resolve(reader.result);
-    }
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject("response invalid to text");
+      }
+    };
     reader.onerror = reject;
   });
-}
+};
 
-const traverseFileTree = async (item: any, path?: any) => {
-  return new Promise((resolve, reject) => {
+const traverseFileTree = async (item: any, path?: string) => {
+  return new Promise<File[]|File>((resolve, reject) => {
     path = path || "";
     if (item.isFile) {
       item.file(async (file: File) => {
@@ -64,18 +74,22 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
   const [dragEnter, setDragEnter] = useState(false);
   const [dropFile, setDropFile] = useState(false);
 
-  const ReaderFiles = async (files: Array<any>) => {
+  const generateUploadFileEmpty = (size: number): IUploadFile[] => {
+    return Array(size).fill({ src: "" });
+  };
+
+  const ReaderFiles = async (files: File[]) => {
     if (files.length === 0) {
       endOnDrag();
       return;
     }
-    const filesAllowed = filterFiles(files);
+    const filesAllowed: File[] = filterFiles(files);
     if (filesAllowed.length === 0) {
       endOnDrag();
       return;
     }
 
-    let list: Array<any> = Array(files.length).fill({ src: "" });
+    let list: IUploadFile[] = generateUploadFileEmpty(files.length);
     let index: number = 0;
 
     setDropFile(true);
@@ -83,7 +97,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
 
     for (const item of filesAllowed) {
       let preview = "";
-      let src:any = window.URL.createObjectURL(item);
+      let src: string = window.URL.createObjectURL(item);
       if (item.type.startsWith("video")) {
         const video = new Video(item);
         const thumbnails = await video.getThumbnails({
@@ -91,20 +105,18 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
           start: 0,
           end: 5,
         });
-        if(thumbnails.length > 0 && thumbnails[thumbnails.length - 1].blob ){
-          preview = window.URL.createObjectURL(thumbnails[thumbnails.length - 1].blob);
+        if (thumbnails.length > 0 && thumbnails[thumbnails.length - 1].blob) {
+          preview = window.URL.createObjectURL(
+            thumbnails[thumbnails.length - 1].blob
+          );
         }
       }
       if (item.type.startsWith("text") || item.type.endsWith("json")) {
         preview = src;
-        if(item.text){
-          src = await item.text();
-        } else {
-          try{
-            src = await readBlobAsString(item);
-          }catch(e) {
-            console.log(e);
-          }
+        try {
+          src = await readBlobAsString(item);
+        } catch (e) {
+          console.log(e);
         }
       }
       list[index] = {
@@ -120,30 +132,30 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
     onReadyFiles(list);
   };
 
-  const filterFiles = (fileList: Array<any>) => {
+  const filterFiles = (fileList: any): File[] => {
     const exp = /^(image|video|text|application\/json)/;
     return [...fileList].filter((item) => exp.test(item.type));
   };
 
-  const stopPropagation = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const stopPropagation = (event: DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
   };
 
-  const onDragEnter = (e: any) => {
+  const onDragEnter = (event: DragEvent) => {
     setDragEnter(true);
-    stopPropagation(e);
+    stopPropagation(event);
   };
 
-  const onDragLeave = (e: any) => {
+  const onDragLeave = (event: DragEvent) => {
     setDragEnter(false);
-    stopPropagation(e);
+    stopPropagation(event);
   };
 
-  const onDrop = async (e: any) => {
-    const fileList: FileList = e.dataTransfer.files;
-    const items: DataTransferItemList = e.dataTransfer.items;
-    stopPropagation(e);
+  const onDrop = async (event: DragEvent) => {
+    const fileList: FileList = event.dataTransfer.files;
+    const items: DataTransferItemList = event.dataTransfer.items;
+    stopPropagation(event);
     let filesImport: any = [];
 
     for (let i = 0; i < items.length; i++) {
@@ -151,7 +163,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
         //try read directory
         try {
           let item = items[i].webkitGetAsEntry();
-          let filesDirectory: any = await traverseFileTree(item);
+          let filesDirectory = await traverseFileTree(item);
           filesImport = filterFiles(filesDirectory);
         } catch (e) {
           console.log(e);
@@ -168,7 +180,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
     ReaderFiles(filesImport);
   };
 
-  const onClick = () => {
+  const onClick = (event:MouseEvent) => {
     const input = document.createElement("input") as HTMLInputElement;
     input.type = "file";
     input.multiple = true;
@@ -189,10 +201,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
       <DragBox
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
+        onDragOver={stopPropagation}
         onDrop={onDrop}
         onClick={onClick}
         className={
