@@ -33,7 +33,7 @@ interface IUploadFile {
   preview: string;
 }
 
-const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
+const FilesList: React.FC<Props> = ({ files, setFiles }) => {
   const [currentItem, setCurrentItem] = useState(0);
   const [showPreview, setShowPreview] = useState(true);
   const total = files.length;
@@ -145,4 +145,4 @@ const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
   );
 };
 
-export default ListFiles;
+export default FilesList;

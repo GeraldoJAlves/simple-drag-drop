@@ -23,7 +23,7 @@ interface IUploadFile {
 }
 interface Props {
   onReadyFiles(files: IUploadFile[]): void;
-  endOnDrag(): void;
+  hideDragArea(): void;
 }
 
 const readBlobAsString = (file: Blob) => {
@@ -70,7 +70,7 @@ const traverseFileTree = async (item: any, path?: string) => {
   });
 };
 
-const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
+const DragDrop: React.FC<Props> = ({ onReadyFiles, hideDragArea }) => {
   const [dragEnter, setDragEnter] = useState(false);
   const [dropFile, setDropFile] = useState(false);
 
@@ -80,12 +80,12 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
 
   const ReaderFiles = async (files: File[]) => {
     if (files.length === 0) {
-      endOnDrag();
+      hideDragArea();
       return;
     }
     const filesAllowed: File[] = filterFiles(files);
     if (filesAllowed.length === 0) {
-      endOnDrag();
+      hideDragArea();
       return;
     }
 

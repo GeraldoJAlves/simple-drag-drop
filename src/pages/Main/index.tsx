@@ -2,7 +2,7 @@ import React, { useState, DragEvent } from "react";
 
 import { Container } from "./styles";
 
-import ListFiles from "../../components/ListFiles";
+import FilesList from "../../components/FilesList";
 import DragDrop from "../../components/DragDrop";
 
 interface IUploadFile {
@@ -10,50 +10,48 @@ interface IUploadFile {
   type: string;
   size: number;
   src: string;
-  preview:string;
+  preview: string;
 }
 
 const Main: React.FC = () => {
-  
   const [files, setFiles] = useState<IUploadFile[]>([]);
   const [dragFiles, setDragFiles] = useState(false);
 
-  const stopPropagation = (e:DragEvent) => {
+  const stopPropagation = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  }
+  };
+
+  const showDragArea = (event: DragEvent) => {
+    setDragFiles(true);
+    stopPropagation(event);
+  };
+
+  const hideDragArea = (event: DragEvent) => {
+    setDragFiles(false);
+    stopPropagation(event);
+  };
 
   return (
     <Container
-      onDragEnter={(event:DragEvent) => {
-        setDragFiles(true);
-        stopPropagation(event);
-      }}
-      onDragLeave={(event:DragEvent) => {
-        stopPropagation(event);
-        setDragFiles(false);
-      }}
-      onDrop={(event:DragEvent) => {
-        stopPropagation(event);
-        setDragFiles(false);
-      }}
-      onDragOver={(event:DragEvent) => {
-        stopPropagation(event);
-      }}
+      onDragEnter={showDragArea}
+      onDragLeave={hideDragArea}
+      onDrop={hideDragArea}
+      onDragOver={stopPropagation}
     >
       {files.length === 0 || dragFiles ? (
         <DragDrop
           onReadyFiles={(newFiles: IUploadFile[]) => {
             setDragFiles(false);
-            const mergeFiles:IUploadFile[] = [];
-            setFiles(mergeFiles.concat(...files,...newFiles));
+            const mergeFiles: IUploadFile[] = [];
+            setFiles(mergeFiles.concat(...files, ...newFiles));
           }}
-          endOnDrag={()=>{
+          hideDragArea={() => {
             setDragFiles(false);
           }}
         />
       ) : (
-        <ListFiles
+        <FilesList
           files={files}
           setFiles={(files: IUploadFile[]) => {
             setFiles(files);

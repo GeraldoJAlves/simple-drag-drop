@@ -87,6 +87,7 @@ const PreviewList: React.FC<Props> = ({ files, currentItem, setCurrentItem }) =>
       {files.map((item, index) => {
         return (
           <PreviewItem
+            key={index}
             src={item.preview}
             name={item.name}
             type={item.type}
