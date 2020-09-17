@@ -15,7 +15,7 @@ Drag&Drop
 
 ## Finalidade
 
-Projeto criado com react com para aprender sobre drag&drop de arquivos.
+Projeto criado com react com para aprender sobre drag&drop de arquivos e utilização da FileSystemApi.
 
 ## Result
 
