@@ -10,7 +10,7 @@ interface IUploadFile {
   type: string;
   size: number;
   src: string;
-  preview?:string;
+  preview:string;
 }
 
 const Main: React.FC = () => {

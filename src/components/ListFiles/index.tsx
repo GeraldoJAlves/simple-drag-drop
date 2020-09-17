@@ -1,4 +1,6 @@
-import React, { useState, useEffect, WheelEvent, MouseEvent } from "react";
+import React, { useState } from "react";
+
+import PreviewList from "../PreviewList";
 
 import {
   Container,
@@ -15,9 +17,6 @@ import {
   ToolBar,
   PreviewIconClose,
   PreviewIconOpen,
-  Preview,
-  PreviewItem,
-  PreviewText,
 } from "./styles";
 
 import Skeleton from "../Skeleton";
@@ -31,15 +30,8 @@ interface IUploadFile {
   type: string;
   size: number;
   src: string;
-  preview?: string;
+  preview: string;
 }
-
-const scrollTo = (preview: number) => {
-  const element = document.querySelector(
-    `.preview > .preview-item:nth-child(${preview + 1})`
-  );
-  element?.scrollIntoView(true);
-};
 
 const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
   const [currentItem, setCurrentItem] = useState(0);
@@ -72,70 +64,18 @@ const ListFiles: React.FC<Props> = ({ files, setFiles }) => {
     return null;
   };
 
-  useEffect(() => {
-    scrollTo(currentItem);
-  }, [currentItem]);
-
   return (
     <Container>
       {total > 0 ? (
         <>
-          <Preview
-            className="preview"
-            onWheel={(event: WheelEvent<HTMLDivElement>) => {
-              const element = document.querySelector(".preview");
-              element?.scrollBy(event.deltaY, 0);
-            }}
-          >
-            {showPreview
-              ? files.map((item, index) => {
-                  if (item.src) {
-                    if (
-                      item.type.startsWith("text") ||
-                      item.type.endsWith("json")
-                    ) {
-                      return (
-                        <PreviewText
-                          key={index}
-                          onClick={(event:MouseEvent) => {
-                            index !== currentItem && setCurrentItem(index);
-                          }}
-                          readOnly={true}
-                          value={item.src}
-                          className={
-                            "preview-item " +
-                            (index === currentItem ? "active" : "")
-                          }
-                        />
-                      );
-                    }
-                    return (
-                      <PreviewItem
-                        key={index}
-                        onClick={() => {
-                          index !== currentItem && setCurrentItem(index);
-                        }}
-                        src={
-                          item.type.startsWith("image")
-                            ? item.src
-                            : item.preview
-                        }
-                        className={
-                          "preview-item " +
-                          (index === currentItem ? "active" : "")
-                        }
-                      />
-                    );
-                  } else {
-                    return (
-                      <Skeleton key={index} className="image-skeleton">
-                        <LoadImageIcon />
-                      </Skeleton>
-                    );
-                  }
-                })
-              : null}
-          </Preview>
+          {showPreview ? (
+            <PreviewList
+              files={files}
+              currentItem={currentItem}
+              setCurrentItem={setCurrentItem}
+            />
+          ) : null}
+
           <Wrapper style={showPreview ? {} : { height: "100vh" }}>
             {files[currentItem].src ? (
               <>

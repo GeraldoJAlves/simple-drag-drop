@@ -96,8 +96,8 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, endOnDrag }) => {
     onReadyFiles(list);
 
     for (const item of filesAllowed) {
-      let preview = "";
       let src: string = window.URL.createObjectURL(item);
+      let preview = src;
       if (item.type.startsWith("video")) {
         const video = new Video(item);
         const thumbnails = await video.getThumbnails({
