@@ -133,7 +133,7 @@ const DragDrop: React.FC<Props> = ({ onReadyFiles, hideDragArea }) => {
   };
 
   const filterFiles = (fileList: any): File[] => {
-    const exp = /^(image|video|text|application\/json)/;
+    const exp = /^(image|video|text|application\/json|application\/pdf)/;
     return [...fileList].filter((item) => exp.test(item.type));
   };
 

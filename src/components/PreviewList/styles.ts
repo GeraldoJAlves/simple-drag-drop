@@ -61,6 +61,25 @@ export const PreviewImage = styled.img`
   }
 `;
 
+export const PreviewPdf = styled.iframe`
+  cursor: pointer;
+  object-fit: contain;
+  border: 2px solid black;
+  max-width: 100px;
+  opacity: 0.5;
+  transition: opacity 0.5s;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  &.active{
+    opacity: 1;
+    cursor: unset;
+    border: solid #333 .3px;
+  }
+  &:hover{
+    opacity: 1;
+  }
+`;
+
 export const LoadImageIcon = styled(FaImage)`
   width: 30px;
   height: 30px;

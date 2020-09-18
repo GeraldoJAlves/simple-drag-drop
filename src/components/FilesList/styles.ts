@@ -1,7 +1,15 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from "styled-components";
 
-
-import {FaImage, FaStepForward, FaStepBackward, FaTrash, FaFastForward, FaFastBackward, FaChevronUp, FaChevronDown} from 'react-icons/fa';
+import {
+  FaImage,
+  FaStepForward,
+  FaStepBackward,
+  FaTrash,
+  FaFastForward,
+  FaFastBackward,
+  FaChevronUp,
+  FaChevronDown,
+} from "react-icons/fa";
 
 export const Container = styled.div`
   display: flex;
@@ -16,7 +24,6 @@ export const Container = styled.div`
   }
 `;
 
-
 export const Wrapper = styled.div`
   position: relative;
   display: flex;
@@ -24,9 +31,8 @@ export const Wrapper = styled.div`
   justify-content: space-between;
   flex: 1;
   align-items: stretch;
-  height: 90vh;
   width: 100vw;
-  &>.image-skeleton {
+  & > .image-skeleton {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,13 +45,14 @@ export const Wrapper = styled.div`
 export const ToolBar = styled.div`
   cursor: pointer;
   padding: 0 10px;
-  display:flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   height: 40px;
   background: black;
-  &>span {
+  & > span {
     color: white;
+    text-align: center;
     font-weight: bold;
   }
 `;
@@ -54,9 +61,9 @@ const cssIcons = css`
   color: white;
   width: 25px;
   height: 25px;
-  transition: transform .5s, opacity 0.2s;
-  &.disable{
-    opacity:0.5;
+  transition: transform 0.5s, opacity 0.2s;
+  &.disable {
+    opacity: 0.5;
     &:hover {
       transform: scale(1);
     }
@@ -97,25 +104,32 @@ export const PrevIcon = styled(FaStepBackward)`
   ${cssIcons}
 `;
 
-
 export const Video = styled.video`
   object-fit: contain;
   width: 100%;
   height: 60vh;
-  flex:1;
+  flex: 1;
   background: black;
   border: none;
   outline: 0;
 `;
 
-
 export const ImgFile = styled.img`
   /* object-fit: contain; */
   object-fit: contain;
   width: 100%;
+  height: 80vh;
+  flex: 1;
+`;
+
+export const IframeFile = styled.iframe`
+  object-fit: contain;
+  width: 100%;
 
   height: 80vh;
-  flex:1;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: hidden;
 `;
 
 export const TextFile = styled.textarea`
@@ -132,6 +146,5 @@ export const TextFile = styled.textarea`
 export const LoadImageIcon = styled(FaImage)`
   width: 30px;
   height: 30px;
-  fill: #BBB;
+  fill: #bbb;
 `;
-

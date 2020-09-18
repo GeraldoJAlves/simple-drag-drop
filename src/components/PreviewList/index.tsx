@@ -1,6 +1,6 @@
 import React, { useEffect, WheelEvent, MouseEvent } from "react";
 
-import { Container, LoadImageIcon, PreviewText, PreviewImage } from "./styles";
+import { Container, LoadImageIcon, PreviewText, PreviewImage, PreviewPdf } from "./styles";
 
 import Skeleton from "../Skeleton";
 
@@ -50,6 +50,15 @@ const PreviewList: React.FC<Props> = ({ files, currentItem, setCurrentItem }) =>
             onClick={onClick}
             readOnly={true}
             value={src}
+            className={"preview-item " + (active ? "active" : "")}
+          />
+        );
+      }
+      if (type.endsWith("pdf")) {
+        return (
+          <PreviewPdf
+            onClick={onClick}
+            src={src}
             className={"preview-item " + (active ? "active" : "")}
           />
         );

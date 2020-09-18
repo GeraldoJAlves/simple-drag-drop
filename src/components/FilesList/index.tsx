@@ -9,6 +9,7 @@ import {
   LoadImageIcon,
   Video,
   TextFile,
+  IframeFile,
   DeleteIcon,
   NextIcon,
   PrevIcon,
@@ -45,6 +46,9 @@ const FilesList: React.FC<Props> = ({ files, setFiles }) => {
     if (item.type.startsWith("text") || item.type.endsWith("json")) {
       return <TextFile readOnly={true} value={item.src} />;
     }
+    if (item.type.endsWith("pdf")) {
+      return <IframeFile src={item.src} />;
+    }
     if (item.type.startsWith("video")) {
       return (
         <Video
@@ -76,7 +80,7 @@ const FilesList: React.FC<Props> = ({ files, setFiles }) => {
             />
           ) : null}
 
-          <Wrapper style={showPreview ? {} : { height: "100vh" }}>
+          <Wrapper style={showPreview ? {height: "90vh"} : { height: "100vh" }}>
             {files[currentItem].src ? (
               <>
                 <ToolBar>
